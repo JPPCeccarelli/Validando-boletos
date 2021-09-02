@@ -151,3 +151,8 @@ const functions = require('./functions');
     assert.throws(() => { functions.titulos.generateBarcode(linhaDigitavel)}, 
         expected, console.log(`Input: ${linhaDigitavel} gera erro ${expected}`));
 })();
+
+(() => {
+    let barcode = "21299758700000020000001121100012100447561740";
+    console.log(functions.titulos.generateResponse(barcode));
+})();
