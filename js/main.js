@@ -1,9 +1,16 @@
 const http = require('http');
+const { send } = require('process');
 const functions = require('./functions');
 
 const PORT = 8080;
 
 const server = http.createServer();
+
+function sendResponse(response, status, mimeType, message) {
+    response.statusCode = status;
+    response.setHeader('Content-Type', mimeType);
+    response.end(message);
+}
 
 server.on('request', (request, response) => {
     const { method, url } = request;
@@ -16,7 +23,10 @@ server.on('request', (request, response) => {
 
             if(lenLD === 47) {
 
-                
+                functions.titulos.verifyDigits(linhaDigitavel);
+                const barcode = functions.titulos.generateBarcode(linhaDigitavel);
+                const resJSON = functions.titulos.generateResponse(barcode);
+                sendResponse(response, 200, 'application/json', resJSON);
 
             } else if (lenLD === 48) {
 
@@ -24,26 +34,18 @@ server.on('request', (request, response) => {
 
             } else {
 
-                response.statusCode = 400;
-                response.setHeader('Content-Type', 'text/plain');
-                response.end("Algo inesperado ocorreu.")
+                sendResponse(response, 400, 'text/plain', "Algo inesperado ocorreu.");
 
             }
 
         } catch(err) {
 
-            err = err.toString()
-
-            response.statusCode = 400;
-            response.setHeader('Content-Type', 'text/plain');
-            response.end(err);
+            sendResponse(response, 400, 'text/plain', err.toString());
 
         }
     } else if (method.toUpperCase() !== "GET") {
 
-        response.statusCode = 400;
-        response.setHeader('Content-Type', 'text/plain');
-        response.end("Apenas operações com GET são suportadas.")
+        sendResponse(response, 400, 'text/plain', "Apenas operações com GET são suportadas.")
 
     }
 });

@@ -153,6 +153,33 @@ const functions = require('./functions');
 })();
 
 (() => {
+    console.log("\n\n\nTeste para verificar resposta JSON do título")
     let barcode = "21299758700000020000001121100012100447561740";
-    console.log(functions.titulos.generateResponse(barcode));
+    let expected = '{"barCode":"21299758700000020000001121100012100447561740","amount":"20.00","expirationDate":"2018-07-16"}';
+    let actual = functions.titulos.generateResponse(barcode);
+    assert.deepStrictEqual(actual, expected, console.log(`Input: ${barcode} gera ${expected}`));
+})();
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+(() => {
+    console.log("\n\n\nTeste para verificar validade dos dígitos verificados para título");
+    console.log("\nTeste 1: retorna true se forem válidos:")
+    let linhaDigitavel = "21290001192110001210904475617405975870000002000";
+    let expected = true;
+    let actual = functions.titulos.verifyDigits(linhaDigitavel)
+    assert.strictEqual(expected, actual, console.log(`Input: ${linhaDigitavel} é validada como ${expected}}`));
+
+    linhaDigitavel = "00190500954014481606906809350314337370000000100";
+    actual = functions.titulos.verifyDigits(linhaDigitavel)
+    assert.strictEqual(expected, actual, console.log(`Input: ${linhaDigitavel} é validada como ${expected}}`));
+})();
+
+(() => {
+    console.log("\nTeste 2: retorna erro se forem inválidos:")
+    let linhaDigitavel = "21290001182110001210904475617405975870000002000";
+    let expected = Error("Dígitos verificadores inválidos.");
+    assert.throws(() => {
+        functions.titulos.verifyDigits(linhaDigitavel)
+    }, expected, console.log(`Input: ${linhaDigitavel} gera ${expected}`))
 })();

@@ -42,6 +42,67 @@ const titulos = {
         
     },
 
+    verifyDigits: (linhaDigitavel) => {
+        
+        if(linhaDigitavel.length !== 47) throw new Error("Linha digitável do título não contém 47 dígitos.");
+        if(typeof linhaDigitavel !== "string") throw new Error("Parâmetros não são String.");
+
+        let verifyingDigits = new Array();
+        let results = new Array();
+        verifyingDigits.push(linhaDigitavel.substring(9, 10), linhaDigitavel.substring(20, 21), linhaDigitavel.substring(31, 32));
+        let digits = new Array();
+        for(let digit of linhaDigitavel) digits.push(Number(digit));
+
+        let mult = 2;
+            sum = 0;
+            num = 0; 
+
+        for(let i = 8; i >= 0; i--) {
+            if(i % 2 == 0) mult = 2;
+            else mult = 1;
+
+            num = mult*digits[i];
+            if(num >= 10) num = num - 9;
+            sum += num;
+        }
+
+        let resto = sum % 10;
+        results.push(10 - resto);
+        sum = 0;
+
+        for(let i = 19; i >= 10; i--) {
+            if(i % 2 == 0) mult = 1;
+            else mult = 2;
+
+            num = mult*digits[i];
+            if(num >= 10) num = num - 9;
+            sum += num;
+        }
+
+        resto = sum % 10;
+        results.push(10 - resto);
+        sum = 0;
+
+        for(let i = 30; i >= 21; i--) {
+            if(i % 2 == 0) mult = 2;
+            else mult = 1;
+
+            num = mult*digits[i];
+            if(num >= 10) num = num - 9;
+            sum += num;
+        }
+
+        resto = sum % 10;
+        results.push(10 - resto);
+        sum = 0;
+
+        for(let i = 0; i < 3; i++) {
+            if(results[i] !== Number(verifyingDigits[i])) throw new Error("Dígitos verificadores inválidos.")
+        }
+
+        return true;
+    },
+
     generateResponse: (barcode) => {
         if(barcode.length !== 44) throw new Error("Código de barras não contém 44 dígitos.");
         if(typeof barcode !== "string") throw new Error("Código de barras deve ser passado como string");
@@ -86,7 +147,7 @@ const titulos = {
         }
 
         let response = new res(barcode);
-        return JSON.stringify(response.toJSON());
+        return JSON.stringify(response);
     }
 }
 
