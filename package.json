@@ -1,0 +1,12 @@
+{
+  "name": "teste-pratico-back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node js/main",
+    "test": "node js/tests"
+  },
+  "author": "",
+  "license": "ISC"
+}
