@@ -43,6 +43,12 @@ const titulos = {
     },
 
     verifyDigits: (linhaDigitavel) => {
+
+        function addDigit(sum, results) {
+            sum = sum % 10;
+            results.push(10 - sum);
+            return 0;
+        }
         
         if(linhaDigitavel.length !== 47) throw new Error("Linha digitável do título não contém 47 dígitos.");
         if(typeof linhaDigitavel !== "string") throw new Error("Parâmetros não são String.");
@@ -53,9 +59,7 @@ const titulos = {
         let digits = new Array();
         for(let digit of linhaDigitavel) digits.push(Number(digit));
 
-        let mult = 2;
-            sum = 0;
-            num = 0; 
+        let mult = 2, sum = 0, num = 0; 
 
         for(let i = 8; i >= 0; i--) {
             if(i % 2 == 0) mult = 2;
@@ -66,9 +70,7 @@ const titulos = {
             sum += num;
         }
 
-        let resto = sum % 10;
-        results.push(10 - resto);
-        sum = 0;
+        sum = addDigit(sum, results);
 
         for(let i = 19; i >= 10; i--) {
             if(i % 2 == 0) mult = 1;
@@ -79,9 +81,7 @@ const titulos = {
             sum += num;
         }
 
-        resto = sum % 10;
-        results.push(10 - resto);
-        sum = 0;
+        sum = addDigit(sum, results);
 
         for(let i = 30; i >= 21; i--) {
             if(i % 2 == 0) mult = 2;
@@ -92,9 +92,7 @@ const titulos = {
             sum += num;
         }
 
-        resto = sum % 10;
-        results.push(10 - resto);
-        sum = 0;
+        sum = addDigit(sum, results);
 
         for(let i = 0; i < 3; i++) {
             if(results[i] !== Number(verifyingDigits[i])) throw new Error("Dígitos verificadores inválidos.")
