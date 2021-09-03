@@ -244,4 +244,23 @@ const functions = require('./functions');
     let expected = true;
     let actual = functions.convenios.verifyGeneralDigit(barcode);
     assert.strictEqual(expected, actual, console.log(`Input: ${barcode} gera ${expected}`));
+
+    barcode = "85820000026178601801205295441838667392510001";
+    actual = functions.convenios.verifyGeneralDigit(barcode);
+    assert.strictEqual(expected, actual, console.log(`Input: ${barcode} gera ${expected}`));
 })();
+
+(() => {
+    console.log("\nTeste 2: retorna error se for dígito geral for inválido");
+    let barcode = "84671000001435900240200240500024384221010811";
+    let expected = Error("Dígito verificador geral é inválido");
+    assert.throws(() => {
+        functions.convenios.verifyGeneralDigit(barcode)
+    }, expected, console.log(`Input: ${barcode} gera ${expected}`));
+
+    barcode = "85821000026178601801205295441838667392510001";
+    assert.throws(() => {
+        functions.convenios.verifyGeneralDigit(barcode)
+    }, expected, console.log(`Input: ${barcode} gera ${expected}`));
+})();
+

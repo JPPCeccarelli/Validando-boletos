@@ -262,7 +262,7 @@ const convenios = {
     
         } else if(Number(barcodeDigits[2]) === 8 || Number(barcodeDigits[2]) === 9){
 
-            let j = 4; 
+            let j = 4, sum = 0; 
             for(let i = 0; i <= 43; i++) {
                 if(i !== 3) {
                     if(j < 2) j = 9;
@@ -273,10 +273,9 @@ const convenios = {
                 }
             }
 
-            let sum = sum % 11;
-            if(sum === 1) sum = 0;
-            else if(sum === 10) sum = 1;
-            if(sum !== Number(barcodeDigits[3])) throw new Error("Dígito verificador geral é inválido");
+            let resto = sum % 11;
+            if(resto === 1 || resto === 0) resto = 11;
+            if(11 - resto !== Number(barcodeDigits[3])) throw new Error("Dígito verificador geral é inválido");
 
         } else {
             throw new Error("Identificador de valor efetivo inválido");
