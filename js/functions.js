@@ -101,6 +101,27 @@ const titulos = {
         return true;
     },
 
+    verifyFifthDigit: (barcode) => {
+        if(barcode.length !== 44) throw new Error("Código de barras não contém 44 dígitos.");
+        if(typeof barcode !== "string") throw new Error("Código de barras deve ser passado como string");
+
+        let j = 2, sum = 0, barcodeDigits = barcode.split("");
+
+        for(let i = 43; i >= 0; i--) {
+            if(i !== 4) {
+                if(j > 9) j = 2;
+                sum += j*barcodeDigits[i];
+                j += 1;
+            }
+        }
+
+        let resto = sum % 11;
+        if(resto === 0 || resto === 1) resto === 11;
+        if(11 - resto !== Number(barcodeDigits[4])) throw new Error("Dígito verificador (módulo 11) inválido");
+
+        return true;
+    },
+
     generateResponse: (barcode) => {
         if(barcode.length !== 44) throw new Error("Código de barras não contém 44 dígitos.");
         if(typeof barcode !== "string") throw new Error("Código de barras deve ser passado como string");
@@ -149,9 +170,127 @@ const titulos = {
     }
 }
 
+const convenios = {
+
+    verifyAndGenerateBarCode: (linhaDigitavel) => {
+
+        if(typeof linhaDigitavel !== "string") throw new Error("Linha digitável não é uma string.");
+        if(linhaDigitavel.length !== 48) throw new Error("Linha digitável deve conter 48 dígitos");
+
+        let digits = linhaDigitavel.split("");
+
+        let barcode = "",
+            sum = 0,
+            num = 0;
+
+        if(Number(linhaDigitavel[2]) === 6 || Number(linhaDigitavel[2]) === 7) {
+            let mult = 2;
+            for(let i = 0; i <= 47; i++) {
+                if(i !== 11 && i !== 23 && i !== 35 && i !== 47) {
+    
+                    if(i % 2 === 0) mult = 2;
+                    else mult = 1;
+    
+                    barcode += digits[i];
+                    num = digits[i]*mult;
+                    if(num >= 10) num = num % 9;
+                    sum += num;
+    
+                } else {
+    
+                    let resto = sum % 10;
+                    if(resto === 0) resto = 10;
+                    if(10 - resto !== Number(digits[i])) throw new Error(`Um dos dígitos verificadores é inválido.`);
+                    sum = 0;
+    
+                }
+            }
+        } else if (Number(linhaDigitavel[2]) === 8 || Number(linhaDigitavel[2]) === 9) {
+            let j = 4;
+            for(let i = 0; i <= 47; i++) {
+                if(i !== 11 && i !== 23 && i !== 35 && i !== 47) {
+    
+                    if(j < 2) j = 9;
+
+                    barcode += digits[i];
+                    num = digits[i]*j;
+                    sum += num;
+                    j = j - 1;
+    
+                } else {
+    
+                    let resto = sum % 11;
+                    if(resto === 1 || resto === 0) resto = 11;
+                    if(11 - resto !== Number(digits[i])) throw new Error(`Um dos dígitos verificadores é inválido.`);
+                    sum = 0;
+                    j = 4;
+    
+                }
+            }
+        } else {
+            throw new Error("Identificador de valor efetivo inválido");
+        }
+
+        return barcode
+    },
+
+    verifyGeneralDigit: (barcode) => {
+
+        if(typeof barcode !== "string") throw new Error("Código de barras não é uma string.");
+        if(barcode.length !== 44) throw new Error("Código de barras deve conter 44 dígitos");
+
+        let barcodeDigits = barcode.split(""),
+            sum = 0,
+            num = 0;
+
+        if(Number(barcodeDigits[2]) === 6 || Number(barcodeDigits[2]) === 7) {
+            let mult = 1;
+            for(let i = 0; i <= 43; i++) {
+                if(i !== 3) {
+                    if(mult === 1) mult = 2;
+                    else if(mult === 2) mult = 1;
+    
+                    num = barcodeDigits[i]*mult;
+                    if(num >= 10) num = num % 9;
+                    sum += num;
+                }
+            }
+
+            sum = sum % 10;
+
+            if(Number(barcodeDigits[3]) !== (10 - sum)) throw new Error("Dígito verificador geral é inválido");
+    
+        } else if(Number(barcodeDigits[2]) === 8 || Number(barcodeDigits[2]) === 9){
+
+            let j = 4; 
+            for(let i = 0; i <= 43; i++) {
+                if(i !== 3) {
+                    if(j < 2) j = 9;
+    
+                    num = barcodeDigits[i]*j;
+                    sum += num;
+                    j = j - 1;
+                }
+            }
+
+            let sum = sum % 11;
+            if(sum === 1) sum = 0;
+            else if(sum === 10) sum = 1;
+            if(sum !== Number(barcodeDigits[3])) throw new Error("Dígito verificador geral é inválido");
+
+        } else {
+            throw new Error("Identificador de valor efetivo inválido");
+        }
+
+        return true;
+    }
+
+}
+
 module.exports = { 
     verifyLength,
     verifyIfPositiveInteger,
     verifyURL,
-    titulos
+    titulos,
+    convenios
 }

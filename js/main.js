@@ -25,6 +25,7 @@ server.on('request', (request, response) => {
 
                 functions.titulos.verifyDigits(linhaDigitavel);
                 const barcode = functions.titulos.generateBarcode(linhaDigitavel);
+                functions.titulos.verifyFifthDigit(barcode);
                 const resJSON = functions.titulos.generateResponse(barcode);
                 sendResponse(response, 200, 'application/json', resJSON);
 

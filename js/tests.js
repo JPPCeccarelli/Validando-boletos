@@ -183,3 +183,65 @@ const functions = require('./functions');
         functions.titulos.verifyDigits(linhaDigitavel)
     }, expected, console.log(`Input: ${linhaDigitavel} gera ${expected}`))
 })();
+
+(() => {
+    console.log("\n\n\nTeste para verificar validade do quinto dígito");
+    console.log("\nTeste 1: retorna true se o código de barras é válido")
+    let barcode = "23797404300001240200448056168623793601105800";
+    let expected = true;
+    let actual = functions.titulos.verifyFifthDigit(barcode)
+    assert.strictEqual(expected, actual, console.log(`Input: ${barcode} é validada como ${expected}`));
+})();
+
+(() => {
+    console.log("\nTeste 2: retorna error se o código de barras é inválido")
+    let barcode = "23793404300001240200448056168623793601105800";
+    let expected = Error("Dígito verificador (módulo 11) inválido");
+    assert.throws(() => {
+        functions.titulos.verifyFifthDigit(barcode)
+    }, expected, console.log(`Input: ${barcode} gera ${expected}`))
+})();
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+(() => {
+    console.log("\n\n\nTeste para verificar validade dos dígitos verificados para convênio");
+    console.log("\nTeste 1: retorna código de barra se for válido");
+    let linhaDigitavel = "846700000017435900240209024050002435842210108119";
+    let expected = "84670000001435900240200240500024384221010811";
+    let actual = functions.convenios.verifyAndGenerateBarCode(linhaDigitavel);
+    assert.strictEqual(expected, actual, console.log(`Input: ${linhaDigitavel} gera ${expected}`));
+
+    linhaDigitavel = "858200000260178601801205529544183860673925100017";
+    expected = "85820000026178601801205295441838667392510001";
+    actual = functions.convenios.verifyAndGenerateBarCode(linhaDigitavel);
+    assert.strictEqual(expected, actual, console.log(`Input: ${linhaDigitavel} gera ${expected}`));
+})();
+
+(() => {
+    console.log("\nTeste 2: retorna erro se for inválido");
+    let linhaDigitavel = "846700000018435900240209024050002435842210108119";
+    let expected = new Error(`Um dos dígitos verificadores é inválido.`);
+    assert.throws(() => {
+        functions.convenios.verifyAndGenerateBarCode(linhaDigitavel);
+    }, expected, console.log(`Input: ${linhaDigitavel} gera ${expected}`))
+})();
+
+(() => {
+    console.log("\nTeste 3: retorna erro se for inválido");
+    let linhaDigitavel = "843700000018435900240209024050002435842210108119";
+    let expected = Error("Identificador de valor efetivo inválido");
+    assert.throws(() => {
+        functions.convenios.verifyAndGenerateBarCode(linhaDigitavel);
+    }, expected, console.log(`Input: ${linhaDigitavel} gera ${expected}`))
+})();
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+(() => {
+    console.log("\nTeste 1: retorna true se for dígito geral for válido");
+    let barcode = "84670000001435900240200240500024384221010811";
+    let expected = true;
+    let actual = functions.convenios.verifyGeneralDigit(barcode);
+    assert.strictEqual(expected, actual, console.log(`Input: ${barcode} gera ${expected}`));
+})();
