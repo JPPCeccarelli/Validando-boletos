@@ -219,7 +219,7 @@ const functions = require('./functions');
 })();
 
 (() => {
-    console.log("\nTeste 2: retorna erro se for inválido");
+    console.log("\nTeste 2: retorna erro se dígitos verificadores forem inválido");
     let linhaDigitavel = "846700000018435900240209024050002435842210108119";
     let expected = new Error(`Um dos dígitos verificadores é inválido.`);
     assert.throws(() => {
@@ -228,7 +228,7 @@ const functions = require('./functions');
 })();
 
 (() => {
-    console.log("\nTeste 3: retorna erro se for inválido");
+    console.log("\nTeste 3: retorna erro se dígito de valor efetivo for inválido");
     let linhaDigitavel = "843700000018435900240209024050002435842210108119";
     let expected = Error("Identificador de valor efetivo inválido");
     assert.throws(() => {
@@ -239,7 +239,7 @@ const functions = require('./functions');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 (() => {
-    console.log("\nTeste 1: retorna true se for dígito geral for válido");
+    console.log("\nTeste 1: retorna true se dígito geral for válido");
     let barcode = "84670000001435900240200240500024384221010811";
     let expected = true;
     let actual = functions.convenios.verifyGeneralDigit(barcode);
@@ -264,3 +264,17 @@ const functions = require('./functions');
     }, expected, console.log(`Input: ${barcode} gera ${expected}`));
 })();
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+(() => {
+    console.log('\n\n\nTesta resposta para código de barras do convênio');
+    let barcode = "85820000026178601801205295441838667392510001";
+    let expected = '{"barCode":"85820000026178601801205295441838667392510001","amount":"2617.86","expirationDate":""}';
+    let actual = functions.convenios.generateResponse(barcode);
+    assert.deepStrictEqual(expected, actual, console.log(`Input: ${barcode} gera ${expected}`));
+
+    barcode = "84670000001435900240200240500024384221010811";
+    expected = '{"barCode":"84670000001435900240200240500024384221010811","amount":"143.59","expirationDate":""}';
+    actual = functions.convenios.generateResponse(barcode);
+    assert.deepStrictEqual(expected, actual, console.log(`Input: ${barcode} gera ${expected}`));
+})();

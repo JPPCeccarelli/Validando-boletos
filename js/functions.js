@@ -9,6 +9,8 @@ function verifyURL(url) {
 
 function verifyIfPositiveInteger(value) {
     if(typeof value !== "string") throw new Error("Linha digitável deve ser passada como String!");
+
+    //obs: o regex abaixo identifica se são apenas dígitos 0-9
     if(/^\d+$/.test(value)) { 
         if(Number(value) > 0) return true;
         else throw new Error("A linha digitável deve ser um número inteiro maior que 0!");
@@ -28,6 +30,9 @@ function verifyLength(value) {
 
 const titulos = {
 
+    // métodos relacionados à títulos
+
+    // gera código de barras de acordo com linha digitável
     generateBarcode: (value) => {
         if(value.length !== 47) throw new Error("Linha digitável do título não contém 47 dígitos.");
         if(typeof value !== "string") throw new Error("Linha digitável deve ser passada como string");
@@ -42,6 +47,7 @@ const titulos = {
         
     },
 
+    // verifica se os dígitos de verificação são válidos
     verifyDigits: (linhaDigitavel) => {
 
         function addDigit(sum, results) {
@@ -101,6 +107,7 @@ const titulos = {
         return true;
     },
 
+    // verifica se o quinto dígito é válido (método 11)
     verifyFifthDigit: (barcode) => {
         if(barcode.length !== 44) throw new Error("Código de barras não contém 44 dígitos.");
         if(typeof barcode !== "string") throw new Error("Código de barras deve ser passado como string");
@@ -122,6 +129,7 @@ const titulos = {
         return true;
     },
 
+    // gera JSON para título
     generateResponse: (barcode) => {
         if(barcode.length !== 44) throw new Error("Código de barras não contém 44 dígitos.");
         if(typeof barcode !== "string") throw new Error("Código de barras deve ser passado como string");
@@ -172,6 +180,9 @@ const titulos = {
 
 const convenios = {
 
+    // métodos para os convênios
+
+    // verifica se os dígitos da linha digitável são válidos e retorna barCode (p/ ambos metodos 10 e 11)
     verifyAndGenerateBarCode: (linhaDigitavel) => {
 
         if(typeof linhaDigitavel !== "string") throw new Error("Linha digitável não é uma string.");
@@ -234,6 +245,7 @@ const convenios = {
         return barcode
     },
 
+    // verifica o dígito geral de validação (ambos os métodos)
     verifyGeneralDigit: (barcode) => {
 
         if(typeof barcode !== "string") throw new Error("Código de barras não é uma string.");
@@ -282,6 +294,57 @@ const convenios = {
         }
 
         return true;
+    },
+
+    // gera JSON para convênio (obs: a data retorna não existente caso seja inválida, e o 
+    // valor caso o segundo dígito do código seja != 6 e != 8 (pois o valor não está exatamente em reais))
+    generateResponse: (barcode) => {
+        if(barcode.length !== 44) throw new Error("Código de barras não contém 44 dígitos.");
+        if(typeof barcode !== "string") throw new Error("Código de barras deve ser passado como string");
+
+        class res {
+            constructor(barcode) {
+
+                this.getDate = (barcode) => {
+
+                    let joinedDate = '';
+                    if(Number(barcode.substring(1, 2)) === 6) joinedDate = barcode.substring(23, 31);
+                    else joinedDate = barcode.substring(19, 27);
+
+                    let yyyy = joinedDate.substring(0, 4),
+                        mm = joinedDate.substring(4, 6),
+                        dd = joinedDate.substring(6);
+
+                    let expirationDate = `${yyyy}-${mm}-${dd}`;
+                    if(!isNaN(Date.parse(expirationDate))) return expirationDate;
+                    else return "";
+                }
+
+                this.getAmount = (barcode) => {
+                    if(Number(barcode.substring(2, 3)) === 6 || Number(barcode.substring(2, 3)) === 8)  {
+                        return Number(barcode.substring(4, 13)) + '.' + barcode.substring(13, 15);
+                    } else {
+                        return "";
+                    }
+                }
+
+                this.barCode = barcode;
+                this.amount = this.getAmount(barcode);
+                this.expirationDate = this.getDate(barcode);
+            }
+
+            toJSON() {
+                return {
+                    barCode: this.barCode,
+                    amount: this.amount,
+                    expirationDate: this.expirationDate
+                }
+            }
+
+        }
+
+        let response = new res(barcode);
+        return JSON.stringify(response);
     }
 
 }
