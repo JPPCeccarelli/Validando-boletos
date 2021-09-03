@@ -20,7 +20,6 @@ server.on('request', (request, response) => {
             const lenLD = functions.verifyLength(linhaDigitavel);
             functions.verifyIfPositiveInteger(linhaDigitavel);
 
-            // Aparentemente os tipos de contas possuem apenas 47 (títulos) ou 48 (convênios) dígitos para as linhas digitáveis
             if(lenLD === 47) {
 
                 functions.titulos.verifyDigits(linhaDigitavel);

@@ -175,6 +175,8 @@ const functions = require('./functions');
     assert.strictEqual(expected, actual, console.log(`Input: ${linhaDigitavel} é validada como ${expected}}`));
 })();
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 (() => {
     console.log("\nTeste 2: retorna erro se forem inválidos:")
     let linhaDigitavel = "21290001182110001210904475617405975870000002000";
@@ -239,6 +241,7 @@ const functions = require('./functions');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 (() => {
+    console.log("\n\n\nTestes de verificação do dígito geral de validação do convênio");
     console.log("\nTeste 1: retorna true se dígito geral for válido");
     let barcode = "84670000001435900240200240500024384221010811";
     let expected = true;
